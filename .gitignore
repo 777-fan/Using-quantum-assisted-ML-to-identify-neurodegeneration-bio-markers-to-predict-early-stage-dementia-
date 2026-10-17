@@ -1,0 +1,18 @@
+# Python Virtual Environment
+venv/
+__pycache__/
+*.pyc
+
+# Local system files
+.DS_Store
+
+# Temporary matplotlib cache
+/tmp/matplotlib_cache/
+.matplotlib/
+
+# Large raw scans directory (if any large NIfTI / DICOM files exist)
+scans/
+
+# Data split csvs (optional: keep data/ tracked so anyone can run it immediately)
+# If you don't want raw full dataset on GitHub:
+OASIS-3_Hippo_cdr_freesurfer_dataset_FIXED.csv
