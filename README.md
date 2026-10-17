@@ -40,7 +40,7 @@ An end-to-end clinical machine learning framework that combines **PennyLane Quan
 
 ---
 
-## 🔬 Key Components
+## Key Components
 
 1. **Strict Patient-Level Split (0% Leakage)**:
    - OASIS-3 is a longitudinal cohort. Patients are partitioned strictly by `Subject` ID across training and holdout test sets so that past, present, and future scans of a subject never leak between partitions.
@@ -86,7 +86,7 @@ python run_pipeline.py
 
 ---
 
-## 📊 Sample Output
+## Sample Output
 ```text
 ======================================================================
 UNIFIED QUANTUM-CLASSICAL DEMENTIA RISK ASSESSMENT
