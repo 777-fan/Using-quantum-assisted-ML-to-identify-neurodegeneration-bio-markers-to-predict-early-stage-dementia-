@@ -4,7 +4,7 @@ An end-to-end clinical machine learning framework that combines **PennyLane Quan
 
 ---
 
-## 📌 Architecture Overview
+## Architecture Overview
 
 ```
                 [ Patient Brain MRI Scan ]
@@ -55,7 +55,7 @@ An end-to-end clinical machine learning framework that combines **PennyLane Quan
 
 ---
 
-## 🚀 Quickstart
+## Quickstart
 
 ### 1. Installation
 Clone the repository and set up a virtual environment:
