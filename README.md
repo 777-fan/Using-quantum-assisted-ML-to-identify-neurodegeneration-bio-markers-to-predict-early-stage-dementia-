@@ -1,64 +1,91 @@
-# Using Quantum-Assisted Machine Learning to Identify Neurodegeneration Biomarkers and Predict Early-Stage Dementia Risk
+# Using Quantum-Assisted ML to Identify Neurodegeneration Biomarkers & Predict Early-Stage Dementia Risk
 
-An end-to-end clinical machine learning framework that combines **PennyLane Quantum Computing (Variational Quantum Circuits)**, **Gradient Boosted Decision Trees (XGBoost)**, **TreeSHAP Explainable AI**, and **Monte Carlo Longitudinal Trajectory Simulations** to predict early-stage Alzheimer's disease spectrum dementia risk from brain MRI scans using the OASIS-3 cohort.
+An end-to-end multi-modal clinical machine learning and quantum computing system that predicts early-stage Alzheimer's disease spectrum dementia risk from brain MRI scans and clinical history using the OASIS-3 cohort.
+
+The architecture combines **PennyLane 6-Qubit Variational Quantum Circuits**, **Gradient Boosted Decision Trees (XGBoost)**, **TreeSHAP Explainable AI**, and a **Non-Linear Sigmoidal Biological Cascade Monte Carlo Engine** (Jack et al. model) to identify subtle neurodegeneration biomarkers, quantify cognitive reserve buffering, and project personalized 10-year diagnosis time windows.
 
 ---
 
-## Architecture Overview
+## 📌 Multi-Modal Architecture Overview
 
 ```
-                [ Patient Brain MRI Scan ]
-       (Age, Hippo Volume, ICV, Cortex, Subcortical, WM)
-                             │
-            ┌────────────────┴────────────────┐
-            ▼                                 ▼
-[ Classical Volumetric Biomarkers ]  [ PennyLane Quantum Circuit ]
-• Normalized Hippo                   • 4-Qubit Entangled Circuit
-• Normalized Cortex                  • Non-linear geometric mapping
-• Subcortical Gray Matter            • Outputs: Quantum Interaction Features
-• White Matter & Asymmetry                      (Q0, Q1, Q2, Q3)
-            │                                 │
-            └────────────────┬────────────────┘
-                             ▼
-             [ Unified 10D Enriched Feature Space ]
-                             │
-                             ▼
-             [ Single Unified XGBoost Engine ]
-                             │
-            ┌────────────────┴────────────────┐
-            ▼                                 ▼
-  ★ ONE UNIFIED RISK SCORE ★        ★ PER-PREDICTION BIOMARKERS ★
-   (0.0% to 100.0% Probability)       (TreeSHAP Local Attribution)
-                             │
-                             ▼
-            [ Monte Carlo 10-Year Forward Engine ]
-   Stochastic annual atrophy sampling: ΔV ~ N(μ_atrophy, σ_atrophy)
-                             │
-                             ▼
-  ★ ESTIMATED WINDOW TO DIAGNOSIS (IF APPLICABLE) & 95% CI ★
+                       [ MULTI-MODAL CLINICAL REPOSITORIES ]
+      ┌─────────────────────────────┼─────────────────────────────┐
+      ▼                             ▼                             ▼
+[ FreeSurfer Structural MRI ]   [ NACC Form C1 Psychometrics ]  [ Forms A3 & A5 Health/Genetics ]
+• Hippocampus Volume (Norm)     • MMSE & Cognitive Buffer       • Vascular Burden Index (Stroke/CVD)
+• Cortical Gray Matter Ratio    • Reserve Masked Discordance    • Hypertension & Heart History
+• Subcortical & White Matter    • Hemispheric Asymmetry         • Parental Dementia History
+      │                             │                             │
+      └─────────────────────────────┼─────────────────────────────┘
+                                    ▼
+                [ Step 1: Multi-Modal Dataset Fusion ]
+                • Clean join on `Subject` ID + nearest visit date
+                • Strict Patient-Level Split (0% Leakage)
+                                    │
+                                    ▼
+                [ Step 2: 6-Qubit PennyLane Quantum Layer ]
+                • Parameterized Quantum Circuit with Cyclic CNOT Entanglement
+                • Projects non-linear multi-region & cognitive cross-talk into Hilbert space
+                • Outputs: Quantum Entanglement Features (Q0 through Q5)
+                                    │
+                                    ▼
+                [ Step 3: Unified Multi-Modal XGBoost Engine ]
+                • Single Gradient Boosted Classifier trained on 16D unified features
+                • Output: Unified Multi-Modal Dementia Risk Probability (0.0% to 100.0%)
+                                    │
+                                    ▼
+                [ Step 4: Multi-Domain TreeSHAP Explainer ]
+                • Primary Disease Risk Driver (e.g. Medial Temporal Atrophy, Vascular Strain)
+                • Primary Protective Biomarker (e.g. Cognitive Reserve Buffer, Preserved Cortex)
+                • Full Feature Waterfall Breakdown
+                                    │
+                                    ▼
+            [ Step 5: Dynamic Sigmoidal Biological Cascade (Monte Carlo) ]
+            • NON-LINEAR 10-Year Monte Carlo Trajectory (1,000 Stochastic Paths):
+              - Early Phase: Cognitive reserve buffers tissue loss (silent phase).
+              - Acceleration Phase: Vascular & genetic burden steepens the atrophy slope.
+              - Saturation Phase: Late-stage clinical plateau.
+                                    │
+                                    ▼
+   ★ OUTPUT: 
+   1. Unified Multi-Modal Dementia Risk Score (%)
+   2. Multi-Domain Identifying Biomarkers (Structural + Cognitive + Vascular)
+   3. Personalized Biological Atrophy Velocity (%/year tailored by vascular burden)
+   4. Estimated Window to Diagnosis (if applicable) & 95% Confidence Interval
+   5. Dynamic Sigmoidal Trajectory Fan Chart (PNG)
 ```
 
 ---
 
-## Key Components
+## 🔬 Scientific Highlights & Innovations
 
-1. **Strict Patient-Level Split (0% Leakage)**:
-   - OASIS-3 is a longitudinal cohort. Patients are partitioned strictly by `Subject` ID across training and holdout test sets so that past, present, and future scans of a subject never leak between partitions.
-2. **PennyLane Quantum Layer**:
-   - Parameterized 4-qubit circuit utilizing angle embedding and circular entangling layers (`CNOT`) to project brain volumetric interactions into a $2^4 = 16$-dimensional Hilbert space.
-3. **Unified Gradient Boosted Trees**:
-   - Single unified XGBoost classifier trained on classical FreeSurfer metrics and quantum entanglement expectation values.
-4. **Per-Prediction Biomarker Attribution (TreeSHAP)**:
-   - Every inference identifies the **Primary Disease Risk Driver** and **Primary Protective Biomarker**, along with a full feature waterfall breakdown.
-5. **Monte Carlo Longitudinal Trajectory Simulation**:
-   - Runs 1,000 stochastic forward simulation paths across a 10-year projection horizon to determine the probability of conversion and the **estimated window of time until clinical diagnosis ($CDR \ge 0.5$)**.
+1. **Zero Patient-Level Data Leakage**:
+   - Because OASIS-3 is a longitudinal cohort with repeat scans over decades, subjects are split strictly by **`Subject` ID** (1,710 training scans across 958 subjects vs. 442 holdout test scans across 240 subjects). Past, present, and future scans of a subject never cross between splits.
+2. **6-Qubit Multi-Modal Quantum Entanglement**:
+   - Compresses structural volumes, cognitive reserve, and vascular burden through a parameterized PennyLane quantum circuit. Entanglement gates (`CNOT`) capture high-dimensional non-linear interactions across tissue loss and clinical risk.
+3. **Cognitive Reserve Masked Discordance Index**:
+   - Identifies cases where severe hippocampal loss is masked by high education or cognitive baseline (`Hippo_Z` atrophy vs. high MMSE buffer).
+4. **Direction #4: Personalized Sigmoidal Biological Cascade**:
+   - Instead of simplistic linear atrophy, our Monte Carlo engine models the biological sigmoidal cascade. Patients with stroke/hypertension receive a **vascular multiplier** accelerating annual tissue loss (up to 3.08%/year vs. 1.07%/year for controls).
+5. **Multi-Domain TreeSHAP Explainability**:
+   - Every inference identifies the exact anatomical or clinical driver pushing risk up, and the protective factors keeping the patient stable.
 
 ---
 
-## Quickstart
+## 📈 Benchmark Performance (Independent Holdout Cohort)
+
+| Model Architecture | Features | ROC-AUC | Accuracy | F1-Score |
+| :--- | :--- | :---: | :---: | :---: |
+| Classical Baseline | MRI Volumes Only | 0.7751 | 78.05% | 0.5174 |
+| Quantum Hybrid Ensemble | MRI Volumes + 4 Qubits | 0.7806 | 77.83% | 0.5243 |
+| **Unified Multi-Modal Quantum Model** | **MRI + UDS Health + Reserve + 6 Qubits** | **0.7978** | **81.90%** | **0.5745** |
+
+---
+
+## 🚀 Quickstart & Usage
 
 ### 1. Installation
-Clone the repository and set up a virtual environment:
 ```bash
 git clone git@github.com:777-fan/Using-quantum-assisted-ML-to-identify-neurodegeneration-bio-markers-to-predict-early-stage-dementia-.git
 cd Using-quantum-assisted-ML-to-identify-neurodegeneration-bio-markers-to-predict-early-stage-dementia-
@@ -68,56 +95,113 @@ source venv/bin/activate
 pip install numpy pandas scikit-learn xgboost torch pennylane "autoray<0.8.0" matplotlib joblib
 ```
 
-### 2. Predict on a Test Patient
-Run prediction and biomarker attribution on an unseen holdout patient:
+### 2. Predict on a Simulated Patient Profile (`simulated_patients/`)
+Test realistic clinical archetypes included in the repository:
+```bash
+# Patient with moderate hippocampal shrinkage + stroke/hypertension history (High Risk)
+python predict.py --file simulated_patients/patient_vascular_accelerated.json
+
+# Patient with hippocampal shrinkage masked by high cognitive reserve
+python predict.py --file simulated_patients/patient_cognitive_reserve_masked.json
+
+# Resilient control with robust brain volumes and zero vascular burden (Low Risk)
+python predict.py --file simulated_patients/patient_resilient_healthy_control.json
+```
+
+### 3. Predict on a Real Unseen OASIS-3 Holdout Subject
 ```bash
 python predict.py --patient OAS30341
 ```
 
-### 3. Predict on Custom Brain MRI Measurements
+### 4. Predict on Custom Brain MRI & Clinical Inputs
 ```bash
-python predict.py --age 71.5 --hippo 5800 --icv 1500000 --cortex 410000
+python predict.py --age 72.0 --hippo 5800 --icv 1460000 --cortex 405000 --vascular 2 --family 1
 ```
 
-### 4. Rerun the Complete Pipeline
+### 5. Retrain the Pipeline from Scratch
 ```bash
 python run_pipeline.py
 ```
 
 ---
 
-## Sample Output
-```text
-======================================================================
-UNIFIED QUANTUM-CLASSICAL DEMENTIA RISK ASSESSMENT
-======================================================================
-1. UNIFIED DEMENTIA RISK SCORE:
-   ► Predicted Risk: 44.2% [PRECLINICAL / ELEVATED RISK (Transition Warning Zone)]
+## 📊 Sample Inference Output
 
-2. IDENTIFYING BIOMARKERS:
+```text
+Evaluating Simulated Patient Profile from: simulated_patients/patient_vascular_accelerated.json
+  Description: Preclinical 72 y/o with moderate hippocampal loss plus hypertension & stroke history
+  Age: 72.0 y/o | Hippo Vol: 5950.0 mm³ | ICV: 1460000.0 mm³
+  Vascular Burden Index: 2 | Family History: 1 | Reserve Buffer: 0.88
+
+======================================================================
+MULTI-MODAL QUANTUM-ASSISTED DEMENTIA RISK ASSESSMENT
+======================================================================
+1. UNIFIED MULTI-MODAL RISK SCORE:
+   ► Predicted Risk: 71.3% [HIGH RISK (Active Clinical Neurodegenerative Pattern)]
+   ► Personalized Atrophy Velocity: 3.08%/year (Vascular Multiplier: 1.46x)
+
+2. MULTI-DOMAIN IDENTIFYING BIOMARKERS:
    [!] Primary Disease Risk Driver:
-       ► Subcortical Gray Matter Loss
-         • SHAP Impact: +0.1027 (Elevates dementia risk)
-         • Measured Value: 0.0351
+       ► Cognitive Reserve Buffer (Baseline Function)
+         • SHAP Impact: +0.9814 (Accelerates Dementia Trajectory)
+         • Measured Feature Value: 0.8800
    [*] Primary Protective Biomarker:
-       ► Hippocampal Volume Atrophy (Normalized to ICV)
-         • SHAP Impact: -0.4399 (Buffers against cognitive decline)
-         • Measured Value: 0.0044
+       ► Cortical Gray Matter Thinning
+         • SHAP Impact: -0.7161 (Buffers Against Clinical Decline)
+         • Measured Feature Value: 0.2774
 
 3. BIOMARKER CONTRIBUTION BREAKDOWN (TreeSHAP Waterfall):
    [+] Risk Factors (Pushing risk higher):
-       • Subcortical Gray Matter Loss                  : SHAP = +0.1027
-       • Biological Aging                              : SHAP = +0.1012
-       • Quantum Entanglement Q3 (Non-linear Anomaly)  : SHAP = +0.0916
+       • Cognitive Reserve Buffer (Baseline Function)        : SHAP = +0.9814
+       • Hippocampal Volume Ratio (Medial Temporal Atrophy)  : SHAP = +0.3967
+       • Cognitive Reserve Discordance (Masked Atrophy)      : SHAP = +0.1428
+       • Quantum Entanglement Q5 (Reserve Buffer Projection) : SHAP = +0.0952
    [-] Protective Factors (Preserving cognitive stability):
-       • Hippocampal Volume Atrophy (Normalized to ICV): SHAP = -0.4399
-       • Cortical Gray Matter Thinning                 : SHAP = -0.1910
+       • Cortical Gray Matter Thinning                       : SHAP = -0.7161
+       • Hemispheric Hippocampal Asymmetry                   : SHAP = -0.0859
+       • Quantum Entanglement Q2 (Vascular-Atrophy Cross-talk): SHAP = -0.0673
 
-4. MONTE CARLO LONGITUDINAL PROJECTION (10-Year Horizon):
-   ► 10-Year Conversion Risk Probability: 100.0%
-   ► Estimated Window to Diagnosis (if applicable): 0.4 years (95% CI: [0.4 - 1.6] years)
+4. DIRECTION #4 SIGMOIDAL BIOLOGICAL CASCADE PROJECTION (10-Year Horizon):
+   ► 10-Year Conversion Risk Probability:          100.0%
+   ► Estimated Window to Diagnosis (if applicable): 0.0 years (95% CI: [0.0 - 0.0] years)
 
 5. TRAJECTORY FAN CHART:
    ► Saved to: reports/prediction_trajectory.png
 ======================================================================
+```
+
+---
+
+## 📁 Repository Structure
+
+```text
+├── predict.py                     <-- Multi-modal CLI tool (IDs, JSON profiles, custom inputs)
+├── run_pipeline.py                <-- Master training and evaluation driver
+├── README.md                      <-- Project documentation & architecture
+├── .gitignore
+│
+├── src/
+│   ├── build_multimodal_dataset.py <-- Fuses FreeSurfer MRI with UDS Form A5 & A3
+│   ├── unified_quantum_model.py    <-- 6-qubit PennyLane VQC + XGBoost + TreeSHAP
+│   ├── monte_carlo_engine.py       <-- Direction #4 Sigmoidal Biological Cascade Simulator
+│   ├── prepare_data.py             <-- MRI-only dataset partitioner
+│   └── quantum_xgboost_model.py    <-- 4-qubit baseline model
+│
+├── simulated_patients/            <-- Pre-configured clinical JSON profiles
+│   ├── patient_vascular_accelerated.json
+│   ├── patient_cognitive_reserve_masked.json
+│   ├── patient_resilient_healthy_control.json
+│   └── generate_profiles.py
+│
+├── saved_models/                  <-- Pre-trained weights and preprocessors
+│   ├── multimodal_xgboost_model.json
+│   ├── multimodal_preprocessor.joblib
+│   ├── unified_xgboost_model.json
+│   └── unified_preprocessor.joblib
+│
+├── data/                          <-- Partitioned train/test datasets
+│   ├── oasis3_multimodal_train.csv
+│   └── oasis3_multimodal_test.csv
+│
+└── reports/                       <-- Generated trajectory fan chart plots (.png)
 ```
