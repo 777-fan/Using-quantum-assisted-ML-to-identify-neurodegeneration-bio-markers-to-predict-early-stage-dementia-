@@ -1,0 +1,13 @@
+{
+  "Description": "Preclinical 72 y/o with moderate hippocampal loss plus hypertension & stroke history",
+  "Age": 72.0,
+  "TOTAL_HIPPOCAMPUS_VOLUME": 5950.0,
+  "IntraCranialVol": 1460000.0,
+  "CortexVol": 405000.0,
+  "SubCortGrayVol": 50500.0,
+  "CorticalWhiteMatterVol": 410000.0,
+  "Hippo_Asymmetry": 0.08,
+  "Cognitive_Reserve_Buffer": 0.88,
+  "Vascular_Burden_Index": 2,
+  "Family_Dementia_History": 1
+}

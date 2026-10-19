@@ -1,0 +1,13 @@
+{
+  "Description": "71 y/o resilient control with robust hippocampal volume (8,200 mm3) and zero vascular risk",
+  "Age": 71.0,
+  "TOTAL_HIPPOCAMPUS_VOLUME": 8200.0,
+  "IntraCranialVol": 1600000.0,
+  "CortexVol": 475000.0,
+  "SubCortGrayVol": 57000.0,
+  "CorticalWhiteMatterVol": 460000.0,
+  "Hippo_Asymmetry": 0.02,
+  "Cognitive_Reserve_Buffer": 1.0,
+  "Vascular_Burden_Index": 0,
+  "Family_Dementia_History": 0
+}

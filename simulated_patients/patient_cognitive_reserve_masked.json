@@ -1,0 +1,13 @@
+{
+  "Description": "69 y/o with significant hippocampal shrinkage (5,500 mm3) but masked by high cognitive buffer (MMSE 29/30)",
+  "Age": 69.5,
+  "TOTAL_HIPPOCAMPUS_VOLUME": 5500.0,
+  "IntraCranialVol": 1420000.0,
+  "CortexVol": 418000.0,
+  "SubCortGrayVol": 52000.0,
+  "CorticalWhiteMatterVol": 425000.0,
+  "Hippo_Asymmetry": 0.04,
+  "Cognitive_Reserve_Buffer": 0.97,
+  "Vascular_Burden_Index": 0,
+  "Family_Dementia_History": 1
+}
