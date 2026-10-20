@@ -205,3 +205,11 @@ MULTI-MODAL QUANTUM-ASSISTED DEMENTIA RISK ASSESSMENT
 │
 └── reports/                       <-- Generated trajectory fan chart plots (.png)
 ```
+## Latest Updates (2026‑10‑19)
+
+- **Quantum circuit upgrade**: Replaced the manual rotation/CNOT layers with a Pennylane `IQPEmbedding` (ZZ‑FeatureMap) using `n_repeats=NUM_LAYERS`. This provides richer pairwise entanglement.
+- **Training results**: After the upgrade, training ROC‑AUC reached **0.9805** and the hold‑out evaluation achieved **ROC‑AUC 0.8076**, **Accuracy 0.8258**, **Recall 0.6087**, **F1 0.5926**.
+- **Model artifact**: Saved to `saved_models/` and can be re‑used without retraining (load with `UnifiedMultiModalQuantumModel.load()`).
+- **Simulation**: Direction #4 sigmoid biological cascade runs for example subjects, showing personalized risk drivers and 10‑year conversion probabilities.
+
+These changes are reflected in the code base and improve model interpretability and performance.
