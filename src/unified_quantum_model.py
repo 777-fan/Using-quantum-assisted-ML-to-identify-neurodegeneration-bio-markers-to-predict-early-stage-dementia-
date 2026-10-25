@@ -31,13 +31,10 @@ def multimodal_quantum_circuit(features, weights):
     """
     qml.AngleEmbedding(features, wires=range(NUM_QUBITS), rotation="Y")
 
-    for layer in range(weights.shape[0]):
-        for q in range(NUM_QUBITS):
-            qml.Rot(weights[layer, q, 0], weights[layer, q, 1], weights[layer, q, 2], wires=q)
-        for q in range(NUM_QUBITS):
-            qml.CNOT(wires=[q, (q + 1) % NUM_QUBITS])
+    # Apply an IQP (ZZ) feature map to capture pairwise interactions
+    qml.templates.embeddings.IQPEmbedding(features, wires=range(NUM_QUBITS), n_repeats=NUM_LAYERS)
 
-    # Measure PauliZ expectation values across all 6 qubits
+    # Measure PauliZ expectation values across all qubits
     return [qml.expval(qml.PauliZ(i)) for i in range(NUM_QUBITS)]
 
 
