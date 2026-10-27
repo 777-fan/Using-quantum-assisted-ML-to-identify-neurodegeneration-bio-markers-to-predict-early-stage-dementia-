@@ -16,3 +16,4 @@ scans/
 # Data split csvs (optional: keep data/ tracked so anyone can run it immediately)
 # If you don't want raw full dataset on GitHub:
 OASIS-3_Hippo_cdr_freesurfer_dataset_FIXED.csv
+OASIS3_AV1451_PUP.csv

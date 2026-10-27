@@ -205,11 +205,15 @@ MULTI-MODAL QUANTUM-ASSISTED DEMENTIA RISK ASSESSMENT
 │
 └── reports/                       <-- Generated trajectory fan chart plots (.png)
 ```
-## Latest Updates (2026‑10‑19)
+## Latest Updates
 
-- **Quantum circuit upgrade**: Replaced the manual rotation/CNOT layers with a Pennylane `IQPEmbedding` (ZZ‑FeatureMap) using `n_repeats=NUM_LAYERS`. This provides richer pairwise entanglement.
-- **Training results**: After the upgrade, training ROC‑AUC reached **0.9805** and the hold‑out evaluation achieved **ROC‑AUC 0.8076**, **Accuracy 0.8258**, **Recall 0.6087**, **F1 0.5926**.
-- **Model artifact**: Saved to `saved_models/` and can be re‑used without retraining (load with `UnifiedMultiModalQuantumModel.load()`).
-- **Simulation**: Direction #4 sigmoid biological cascade runs for example subjects, showing personalized risk drivers and 10‑year conversion probabilities.
+### 2026-10-27: Molecular Tau PET (`[18F]-AV-1451`) Multi-Modal Fusion
+- **Tracer Fusion**: Integrated Flortaucipir (`[18F]-AV-1451`) Tau PET from the PET Unified Pipeline (PUP) into the multimodal dataset, mapping FreeSurfer MR session IDs directly to molecular tau quantification.
+- **Novel Biomarkers**: Added **Entorhinal Cortex Tau SUVR** (`Tau_Entorhinal_SUVR`) and **Inferior Temporal Tau SUVR** (`Tau_InferiorTemporal_SUVR`), matching early Braak I-IV stages of tau neurofibrillary tangle progression.
+- **Model Evaluation**:
+  - Full Holdout Cohort (Zero Leakage, N=442): **ROC-AUC: 0.8071**, **Accuracy: 82.81%**, **Precision: 0.5889**, **Recall: 0.5761**, **F1: 0.5824**.
+  - Confirmed Tau PET Holdout Scans (N=85): **ROC-AUC: 0.8261**, **Accuracy: 82.35%**.
+- **Dynamic Cascade**: Extended the Direction #4 Sigmoidal Biological Cascade simulator to accelerate medial temporal atrophy velocity as a function of entorhinal tau deposition.
 
-These changes are reflected in the code base and improve model interpretability and performance.
+### 2026-10-19: Quantum Circuit Architecture Upgrade
+- **ZZ-FeatureMap**: Replaced manual `Rot` + `CNOT` layers with PennyLane's `IQPEmbedding` to model higher-order non-linear pairwise interactions across structural, vascular, and molecular domains.

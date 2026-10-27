@@ -50,6 +50,10 @@ class DynamicCascadeSimulator:
         cog_reserve = float(patient_row.get("Cognitive_Reserve_Buffer", 0.95))
         vasc_burden = float(patient_row.get("Vascular_Burden_Index", 0.0))
         fam_history = float(patient_row.get("Family_Dementia_History", 0.0))
+        tau_ent = float(patient_row.get("Tau_Entorhinal_SUVR", 1.106))
+        tau_tmp = float(patient_row.get("Tau_InferiorTemporal_SUVR", 1.177))
+        tau_avail = float(patient_row.get("Tau_PET_Available", 0.0))
+
         norm_hippo_mean = 0.00508
         norm_hippo_std = 0.00069
         hippo_z_0 = (hippo_0 / icv_0 - norm_hippo_mean) / norm_hippo_std
@@ -66,7 +70,10 @@ class DynamicCascadeSimulator:
             "Reserve_Masked_Index": masked_index_0,
             "Cognitive_Reserve_Buffer": cog_reserve,
             "Vascular_Burden_Index": vasc_burden,
-            "Family_Dementia_History": fam_history
+            "Family_Dementia_History": fam_history,
+            "Tau_Entorhinal_SUVR": tau_ent,
+            "Tau_InferiorTemporal_SUVR": tau_tmp,
+            "Tau_PET_Available": tau_avail
         }
 
         explanation = self.model.explain_prediction(baseline_dict)
@@ -75,11 +82,12 @@ class DynamicCascadeSimulator:
         # -------------------------------------------------------------
         # Direction #4: Personalized Sigmoidal Biological Cascade
         # Jack et al. non-linear neurodegenerative model:
-        # Base annual atrophy is accelerated by vascular burden (+0.5% per index point)
-        # and family history (+0.4%), while buffered by cognitive reserve.
+        # Base annual atrophy is accelerated by vascular burden (+0.18 per point),
+        # family history (+0.10), and molecular tau deposition.
         # -------------------------------------------------------------
         base_rate = p_base * 0.026 + (1.0 - p_base) * 0.009
-        vasc_acceleration = 1.0 + (vasc_burden * 0.18) + (fam_history * 0.10)
+        tau_multiplier = 1.0 + max(0.0, (tau_ent - 1.10) * 0.35)
+        vasc_acceleration = (1.0 + (vasc_burden * 0.18) + (fam_history * 0.10)) * tau_multiplier
         mu_atrophy = base_rate * vasc_acceleration
         sigma_atrophy = 0.006
 
@@ -118,6 +126,10 @@ class DynamicCascadeSimulator:
             sim_hippo_z = (sim_norm_hippo - norm_hippo_mean) / norm_hippo_std
             sim_masked = np.maximum(0.0, -sim_hippo_z) * sim_reserve
 
+            # Molecular tau gradually accumulates across the forward cascade
+            sim_tau_ent = tau_ent * (1.0 + 0.015 * year)
+            sim_tau_tmp = tau_tmp * (1.0 + 0.020 * year)
+
             batch_features = np.column_stack([
                 np.full(self.num_simulations, sim_age),
                 sim_norm_hippo,
@@ -128,7 +140,10 @@ class DynamicCascadeSimulator:
                 sim_masked,
                 sim_reserve,
                 np.full(self.num_simulations, vasc_burden),
-                np.full(self.num_simulations, fam_history)
+                np.full(self.num_simulations, fam_history),
+                np.full(self.num_simulations, sim_tau_ent),
+                np.full(self.num_simulations, sim_tau_tmp),
+                np.full(self.num_simulations, tau_avail)
             ])
 
             # Batch predict

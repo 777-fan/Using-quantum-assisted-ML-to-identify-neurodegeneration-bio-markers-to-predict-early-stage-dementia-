@@ -64,7 +64,10 @@ class UnifiedMultiModalQuantumModel:
             "Reserve_Masked_Index",
             "Cognitive_Reserve_Buffer",
             "Vascular_Burden_Index",
-            "Family_Dementia_History"
+            "Family_Dementia_History",
+            "Tau_Entorhinal_SUVR",
+            "Tau_InferiorTemporal_SUVR",
+            "Tau_PET_Available"
         ]
         self.quantum_features = [
             f"Quantum_Entangled_Q{i}" for i in range(NUM_QUBITS)
@@ -145,7 +148,10 @@ class UnifiedMultiModalQuantumModel:
         """
         Runs TreeSHAP local attribution across structural, cognitive, and vascular domains.
         """
-        raw_vals = [float(patient_row_dict[col]) for col in self.classical_features]
+        raw_vals = [
+            float(patient_row_dict.get(col, 1.106 if "Entorhinal" in col else (1.177 if "Inferior" in col else 0.0)))
+            for col in self.classical_features
+        ]
         X_raw = np.array([raw_vals])
         X_unified = self.transform_to_unified(X_raw)
 
@@ -167,6 +173,9 @@ class UnifiedMultiModalQuantumModel:
             "Cognitive_Reserve_Buffer": "Cognitive Reserve Buffer (Baseline Function)",
             "Vascular_Burden_Index": "Vascular Disease Burden (Stroke/CVD/Hypertension)",
             "Family_Dementia_History": "Familial Genetic Predisposition (Parental Dementia)",
+            "Tau_Entorhinal_SUVR": "Entorhinal Tau Burden (Flortaucipir AV-1451)",
+            "Tau_InferiorTemporal_SUVR": "Neocortical Tau Spread (Inferior Temporal AV-1451)",
+            "Tau_PET_Available": "Tau Molecular Pathology Confirmation",
             "Quantum_Entangled_Q0": "Quantum Entanglement Q0 (Structural Geometric Interaction)",
             "Quantum_Entangled_Q1": "Quantum Entanglement Q1 (Cognitive-Structural Coupling)",
             "Quantum_Entangled_Q2": "Quantum Entanglement Q2 (Vascular-Atrophy Cross-talk)",

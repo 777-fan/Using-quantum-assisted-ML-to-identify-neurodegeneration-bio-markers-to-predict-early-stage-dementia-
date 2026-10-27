@@ -33,6 +33,8 @@ def main():
     parser.add_argument("--vascular", type=int, default=0, help="Vascular burden index (0 to 3: stroke, hypertension, heart disease)")
     parser.add_argument("--family", type=int, default=0, help="Family dementia history (1 = parental dementia, 0 = none)")
     parser.add_argument("--reserve", type=float, default=0.95, help="Cognitive reserve buffer (MMSE / 30, e.g. 0.95 = 28.5/30)")
+    parser.add_argument("--tau_ent", type=float, default=1.106, help="Entorhinal Tau SUVR (AV-1451, normal ~1.10, elevated >1.30)")
+    parser.add_argument("--tau_tmp", type=float, default=1.177, help="Inferior Temporal Tau SUVR (AV-1451, normal ~1.18, elevated >1.40)")
     parser.add_argument("--sims", type=int, default=1000, help="Number of Monte Carlo simulations")
     parser.add_argument("--out", type=str, default="reports/prediction_trajectory.png", help="Output plot path")
 
@@ -71,13 +73,19 @@ def main():
             "Hippo_Asymmetry": 0.05,
             "Cognitive_Reserve_Buffer": args.reserve,
             "Vascular_Burden_Index": args.vascular,
-            "Family_Dementia_History": args.family
+            "Family_Dementia_History": args.family,
+            "Tau_Entorhinal_SUVR": args.tau_ent,
+            "Tau_InferiorTemporal_SUVR": args.tau_tmp,
+            "Tau_PET_Available": 1 if (args.tau_ent != 1.106 or args.tau_tmp != 1.177) else 0
         })
         label = f"Custom Patient (Age {args.age:.0f}, Hippo {args.hippo:.0f} mm³)"
         print(f"\nEvaluating Custom Patient Inputs:")
 
     print(f"  Age: {patient_row['Age']:.1f} y/o | Hippo Vol: {patient_row['TOTAL_HIPPOCAMPUS_VOLUME']:.1f} mm³ | ICV: {patient_row['IntraCranialVol']:.1f} mm³")
-    print(f"  Vascular Burden Index: {patient_row.get('Vascular_Burden_Index', 0)} | Family History: {patient_row.get('Family_Dementia_History', 0)} | Reserve Buffer: {patient_row.get('Cognitive_Reserve_Buffer', 0.95):.2f}")
+    tau_info = f"Tau Entorhinal SUVR: {patient_row.get('Tau_Entorhinal_SUVR', 1.106):.2f}"
+    if patient_row.get('Tau_PET_Available', 0) == 1:
+        tau_info += " [AV-1451 Confirmed]"
+    print(f"  Vascular Burden Index: {patient_row.get('Vascular_Burden_Index', 0)} | Family History: {patient_row.get('Family_Dementia_History', 0)} | Reserve Buffer: {patient_row.get('Cognitive_Reserve_Buffer', 0.95):.2f} | {tau_info}")
 
     results = sim.simulate_patient(patient_row)
     plot_file = sim.plot_trajectory(results, patient_id=label, save_path=args.out)

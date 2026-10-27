@@ -9,5 +9,8 @@
   "Hippo_Asymmetry": 0.04,
   "Cognitive_Reserve_Buffer": 0.97,
   "Vascular_Burden_Index": 0,
-  "Family_Dementia_History": 1
+  "Family_Dementia_History": 1,
+  "Tau_Entorhinal_SUVR": 1.42,
+  "Tau_InferiorTemporal_SUVR": 1.38,
+  "Tau_PET_Available": 1
 }

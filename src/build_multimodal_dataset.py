@@ -13,6 +13,7 @@ def build_multimodal_dataset(
     mri_csv="OASIS-3_Hippo_cdr_freesurfer_dataset_FIXED.csv",
     a5_csv="scans/UDSa5-Form_A5__Subject_Health_History/resources/csv/files/OASIS3_UDSa5_health_history.csv",
     a3_csv="scans/UDSa3-Form_A3__Subject_Family_History/resources/csv/files/OASIS3_UDSa3.csv",
+    pup_csv="OASIS3_AV1451_PUP.csv",
     output_dir="data",
     test_size=0.20,
     random_state=42
@@ -91,7 +92,54 @@ def build_multimodal_dataset(
         mri["Dad_Dementia"] = 0
         mri["Family_Dementia_History"] = 0
 
-    # 5. Target Definition: Alzheimer's Disease Spectrum (CDR >= 0.5)
+    # 5. Fuse Molecular Tau PET Pathology (Flortaucipir AV-1451 PUP)
+    if os.path.exists(pup_csv):
+        print("Fusing Flortaucipir AV-1451 Tau PET (PUP Regional SUVR)...")
+        pup = pd.read_csv(pup_csv)
+        pup["Subject"] = pup["PUP_PUPTIMECOURSEDATA ID"].str.extract(r"(OAS\d+)")
+        pup["pup_days"] = pup["PUP_PUPTIMECOURSEDATA ID"].str.extract(r"_d(\d+)").astype(float)
+        mri["mri_days"] = mri["days_from_entry"].astype(float)
+
+        # Exact match on FreeSurfer Session ID (FSId)
+        mri = pd.merge(
+            mri,
+            pup[["FSId", "PET_fSUVR_TOT_CTX_ENTORHINAL", "PET_fSUVR_TOT_CTX_INFERTMP", "PET_fSUVR_TOT_CORTMEAN"]],
+            left_on="FS_FSDATA ID",
+            right_on="FSId",
+            how="left"
+        )
+
+        # Nearest visit match within 365 days for remaining subjects
+        unmatched = mri[mri["PET_fSUVR_TOT_CTX_ENTORHINAL"].isna()].index
+        if len(unmatched) > 0:
+            mri_unmatched = mri.loc[unmatched].sort_values(["mri_days"]).reset_index()
+            pup_sorted = pup.sort_values(["pup_days"]).reset_index(drop=True)
+            m_asof = pd.merge_asof(
+                mri_unmatched,
+                pup_sorted[["Subject", "pup_days", "PET_fSUVR_TOT_CTX_ENTORHINAL", "PET_fSUVR_TOT_CTX_INFERTMP", "PET_fSUVR_TOT_CORTMEAN"]],
+                left_on="mri_days",
+                right_on="pup_days",
+                by="Subject",
+                direction="nearest",
+                tolerance=365
+            )
+            for idx, orig_idx in enumerate(mri_unmatched["index"]):
+                if pd.notna(m_asof.loc[idx, "PET_fSUVR_TOT_CTX_ENTORHINAL_y"]):
+                    mri.loc[orig_idx, "PET_fSUVR_TOT_CTX_ENTORHINAL"] = m_asof.loc[idx, "PET_fSUVR_TOT_CTX_ENTORHINAL_y"]
+                    mri.loc[orig_idx, "PET_fSUVR_TOT_CTX_INFERTMP"] = m_asof.loc[idx, "PET_fSUVR_TOT_CTX_INFERTMP_y"]
+                    mri.loc[orig_idx, "PET_fSUVR_TOT_CORTMEAN"] = m_asof.loc[idx, "PET_fSUVR_TOT_CORTMEAN_y"]
+
+        mri["Tau_PET_Available"] = mri["PET_fSUVR_TOT_CTX_ENTORHINAL"].notna().astype(int)
+        # Normative baseline imputation for un-scanned visits (1.106 and 1.177)
+        mri["Tau_Entorhinal_SUVR"] = mri["PET_fSUVR_TOT_CTX_ENTORHINAL"].fillna(1.106)
+        mri["Tau_InferiorTemporal_SUVR"] = mri["PET_fSUVR_TOT_CTX_INFERTMP"].fillna(1.177)
+    else:
+        print("Warning: AV1451 PUP not found, initializing tau features with baseline reference.")
+        mri["Tau_PET_Available"] = 0
+        mri["Tau_Entorhinal_SUVR"] = 1.106
+        mri["Tau_InferiorTemporal_SUVR"] = 1.177
+
+    # 6. Target Definition: Alzheimer's Disease Spectrum (CDR >= 0.5)
     mri["target"] = (mri["cdr_total"] >= 0.5).astype(int)
 
     # Core Multi-Modal Features
@@ -105,7 +153,10 @@ def build_multimodal_dataset(
         "Reserve_Masked_Index",
         "Cognitive_Reserve_Buffer",
         "Vascular_Burden_Index",
-        "Family_Dementia_History"
+        "Family_Dementia_History",
+        "Tau_Entorhinal_SUVR",
+        "Tau_InferiorTemporal_SUVR",
+        "Tau_PET_Available"
     ]
 
     metadata_cols = [
@@ -125,7 +176,7 @@ def build_multimodal_dataset(
 
     clean_df = mri[metadata_cols + ["target"] + multimodal_features].copy()
 
-    # 6. Patient-Level Train/Holdout Partition (Strict Zero Leakage)
+    # 7. Patient-Level Train/Holdout Partition (Strict Zero Leakage)
     os.makedirs(output_dir, exist_ok=True)
     gss = GroupShuffleSplit(n_splits=1, test_size=test_size, random_state=random_state)
     train_idx, test_idx = next(gss.split(clean_df, clean_df["target"], groups=clean_df["Subject"]))
@@ -142,6 +193,7 @@ def build_multimodal_dataset(
     print(f"Holdout Set: {len(test_df)} scans across {test_df['Subject'].nunique()} subjects")
     print(f"Vascular Burden > 0 in Holdout: {(test_df['Vascular_Burden_Index'] > 0).sum()} scans")
     print(f"Family History > 0 in Holdout:  {(test_df['Family_Dementia_History'] > 0).sum()} scans")
+    print(f"Tau PET Available in Holdout:    {(test_df['Tau_PET_Available'] > 0).sum()} scans")
 
     train_path = os.path.join(output_dir, "oasis3_multimodal_train.csv")
     test_path = os.path.join(output_dir, "oasis3_multimodal_test.csv")

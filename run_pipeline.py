@@ -22,7 +22,15 @@ def main():
     train_csv = "data/oasis3_multimodal_train.csv"
     test_csv = "data/oasis3_multimodal_test.csv"
 
+    rebuild = False
     if not os.path.exists(train_csv) or not os.path.exists(test_csv):
+        rebuild = True
+    else:
+        sample_df = pd.read_csv(train_csv, nrows=5)
+        if "Tau_Entorhinal_SUVR" not in sample_df.columns:
+            rebuild = True
+
+    if rebuild:
         train_csv, test_csv = build_multimodal_dataset()
 
     train_df = pd.read_csv(train_csv)
@@ -37,6 +45,11 @@ def main():
 
     # Evaluate on Holdout Cohort
     model.evaluate(test_df, name="Holdout Multi-Modal Cohort (Zero Leakage)")
+
+    # Evaluate on actual Tau PET Holdout Scans
+    test_actual_tau = test_df[test_df.get("Tau_PET_Available", 0) == 1].copy()
+    if len(test_actual_tau) > 0:
+        model.evaluate(test_actual_tau, name=f"Holdout Scans with Measured Tau PET (n={len(test_actual_tau)})")
 
     # Save Artifacts
     model.save(save_dir="saved_models")
